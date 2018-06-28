@@ -1,4 +1,4 @@
-#! Applications/anaconda/bin
+#! /usr/bin/python3
 
 import requests
 import json
@@ -7,23 +7,23 @@ import sys
 switchIPFile = sys.argv[1]
 cmdFile = sys.argv[2]
 switchUser = "admin"
-f = open("credentials", "r")
-switchPass = f.readline()
+switchPass = "admin"
 headers = {"content-type": "application/json-rpc"}
 
 
-def configControl(switchIP, cmd):
-    url = "http://%s/ins" % (switchIP)
+def configControl(IP, cmd):
+    url = "http://{}/ins".format(IP)
     payload = [
         {"jsonrpc": "2.0", "method": "cli",
          "params": {"cmd": "conf t", "version": 1},
          "id": 1},
         {"jsonrpc": "2.0", "method": "cli",
-            "params": {"cmd": '"'+cmd+'"', "version": 1},
+            "params": {"cmd": "{}".format(cmd), "version": 1},
          "id": 1}
     ]
-    requests.post(url, data=json.dumps(payload), headers=headers,
-                  auth=(switchUser, switchPass)).json()
+    resp = requests.post(url, data=json.dumps(payload), headers=headers,
+                         auth=(switchUser, switchPass)).json()
+    print(resp)
 
 
 switchIP = [line.rstrip("\n") for line in open(switchIPFile)]
